@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — CrustExams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<style>
+  :root{
+    --ink:#181A2A; --indigo:#3D3AA8; --indigo-2:#5C56E0; --violet:#8A63F3;
+    --amber:#FFB648; --coral:#FF6E5E; --cream:#F7F6FB; --muted:#8A8AA3; --line:#E7E5F3;
+    --page-bg:#EEF0F8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--page-bg);color:var(--ink);}
+  h1,h2,h3{font-family:'Sora',sans-serif;}
+  a{text-decoration:none;color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------------- SIDEBAR ---------------- */
+  .sidebar{position:fixed;top:18px;left:18px;bottom:18px;width:250px;background:#fff;border-radius:22px;box-shadow:0 20px 45px -25px rgba(24,26,42,.25);padding:24px 18px;display:flex;flex-direction:column;z-index:50;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Sora',sans-serif;font-weight:800;font-size:17.5px;padding:0 6px 18px;border-bottom:1px solid var(--line);margin-bottom:18px;}
+  .brand-mark{width:32px;height:32px;border-radius:9px;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;}
+  .brand-mark img{width:100%;height:100%;object-fit:contain;}
+  .brand span{color:var(--indigo-2);}
+  .nav-link{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:6px;cursor:pointer;background:transparent;border:none;width:100%;text-align:left;transition:color .25s ease;}
+  .nav-link .ic{width:30px;height:30px;border-radius:9px;background:var(--cream);display:flex;align-items:center;justify-content:center;flex:none;transition:background .25s ease, box-shadow .25s ease;}
+  .nav-link.active{color:var(--ink);}
+  .nav-link.active .ic{background:linear-gradient(120deg,var(--indigo-2),var(--violet));box-shadow:0 10px 20px -8px rgba(92,86,224,.6);}
+  .nav-link.active .ic svg path, .nav-link.active .ic svg rect, .nav-link.active .ic svg circle{stroke:#fff;}
+  .nav-link:not(.active):hover{color:var(--ink);}
+  .nav-link:not(.active):hover .ic{background:#EFEDFD;}
+  .side-help{margin-top:auto;background:linear-gradient(150deg,var(--indigo-2),var(--violet));border-radius:18px;padding:20px;color:#fff;position:relative;overflow:hidden;}
+  .side-help::before{content:"";position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.15);}
+  .side-help p{font-size:12.5px;font-weight:700;margin-bottom:2px;position:relative;}
+  .side-help span{font-size:11.5px;color:rgba(255,255,255,.8);display:block;margin-bottom:12px;position:relative;}
+  .side-help .admin-chip{display:flex;align-items:center;gap:9px;position:relative;}
+  .admin-avatar{width:30px;height:30px;border-radius:50%;background:var(--amber);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none;overflow:hidden;}
+  .admin-avatar img{width:100%;height:100%;object-fit:cover;}
+  .side-help small{font-size:11px;opacity:.85;display:block;}
+  .side-help b{font-size:12.5px;}
+  .logout-btn{margin-top:14px;width:100%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);color:#fff;padding:9px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s ease;}
+  .logout-btn:hover{background:rgba(255,255,255,.3);}
+
+  /* ---------------- MAIN ---------------- */
+  .main{margin-left:290px;padding:26px 32px 50px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:16px;}
+  .crumb{font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+  .crumb b{color:var(--ink);}
+  .topbar h1{font-size:22px;font-weight:800;}
+  .top-right{display:flex;align-items:center;gap:16px;}
+  .search-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px;color:var(--muted);width:210px;box-shadow:0 6px 16px -12px rgba(24,26,42,.2);}
+  .top-admin{display:flex;align-items:center;gap:9px;background:#fff;padding:6px 14px 6px 6px;border-radius:100px;box-shadow:0 6px 16px -12px rgba(24,26,42,.2);}
+  .top-admin .admin-avatar{width:30px;height:30px;}
+  .top-admin span{font-size:13px;font-weight:600;}
+  .banner{display:none;align-items:center;gap:10px;padding:13px 18px;border-radius:14px;font-size:14px;font-weight:500;margin-bottom:22px;}
+
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;animation:panelIn .4s cubic-bezier(.2,.7,.3,1);}
+  @keyframes panelIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;}
+  .stat-card{background:#fff;border-radius:18px;padding:22px;display:flex;justify-content:space-between;align-items:flex-start;box-shadow:0 16px 36px -26px rgba(24,26,42,.35);transition:transform .3s ease, box-shadow .3s ease;}
+  .stat-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -22px rgba(24,26,42,.4);}
+  .stat-card span{font-size:12.5px;color:var(--muted);display:block;margin-bottom:6px;}
+  .stat-card b{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;}
+  .stat-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .stat-card:nth-child(1) .stat-icon{background:linear-gradient(135deg,var(--indigo-2),var(--violet));}
+  .stat-card:nth-child(2) .stat-icon{background:linear-gradient(135deg,var(--amber),#ff9d47);}
+  .stat-card:nth-child(3) .stat-icon{background:linear-gradient(135deg,var(--coral),#ff9080);}
+
+  .promo-row{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;margin-bottom:24px;}
+  .promo-card{border-radius:20px;padding:30px;position:relative;overflow:hidden;}
+  .promo-a{background:#fff;box-shadow:0 16px 36px -26px rgba(24,26,42,.35);display:flex;align-items:center;gap:26px;}
+  .promo-a .txt span{font-size:12px;color:var(--muted);font-weight:600;}
+  .promo-a .txt h3{font-size:20px;margin:6px 0 10px;}
+  .promo-a .txt p{font-size:13.5px;color:var(--muted);line-height:1.6;max-width:280px;}
+  .promo-a .graphic{flex:none;width:130px;height:130px;border-radius:20px;background:linear-gradient(140deg,var(--indigo-2),var(--violet),var(--coral));display:flex;align-items:center;justify-content:center;animation:floaty 4s ease-in-out infinite;}
+  @keyframes floaty{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-8px) rotate(3deg);}}
+  .promo-b{background:linear-gradient(140deg,var(--ink),#242645);color:#fff;display:flex;flex-direction:column;justify-content:center;}
+  .promo-b h3{font-size:19px;margin-bottom:10px;}
+  .promo-b p{font-size:13.5px;color:rgba(255,255,255,.75);line-height:1.6;margin-bottom:18px;}
+  .promo-b button{align-self:flex-start;background:linear-gradient(120deg,var(--indigo-2),var(--violet));color:#fff;border:none;padding:11px 22px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .2s ease;}
+  .promo-b button:hover{transform:translateY(-2px);}
+
+  .panel{background:#fff;border-radius:20px;box-shadow:0 16px 36px -26px rgba(24,26,42,.35);overflow:hidden;margin-bottom:24px;}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;padding:22px 26px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px;}
+  .panel-head h2{font-size:17px;font-weight:700;}
+  .panel-head p{font-size:12.5px;color:var(--muted);margin-top:2px;}
+
+  .mini-list{padding:6px 26px 20px;}
+  .mini-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .mini-row:last-child{border-bottom:none;}
+  .mini-avatar{width:34px;height:34px;border-radius:50%;background:var(--cream);color:var(--indigo-2);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:13px;flex:none;}
+  .mini-row .info p{font-size:13.5px;font-weight:600;}
+  .mini-row .info span{font-size:12px;color:var(--muted);}
+  .mini-empty{padding:30px 26px;text-align:center;color:var(--muted);font-size:13.5px;}
+
+  .btn-add{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:100px;border:none;cursor:pointer;background:linear-gradient(120deg,var(--indigo-2),var(--violet));color:#fff;font-family:'Sora',sans-serif;font-weight:600;font-size:13.5px;transition:transform .2s ease, box-shadow .2s ease;}
+  .btn-add:hover{transform:translateY(-2px);box-shadow:0 12px 22px -8px rgba(92,86,224,.55);}
+  .btn-add:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:14px 26px;border-bottom:1px solid var(--line);font-weight:600;}
+  tbody td{padding:15px 26px;font-size:13.5px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--cream);}
+  .name-cell{display:flex;align-items:center;gap:10px;font-weight:600;}
+  .muted-cell{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12px;}
+  .course-badge{display:inline-flex;padding:4px 11px;border-radius:100px;background:rgba(92,86,224,.1);color:var(--indigo-2);font-size:12px;font-weight:600;white-space:nowrap;}
+  .status-badge{display:inline-flex;padding:4px 12px;border-radius:100px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .status-badge.draft{background:rgba(255,182,72,.18);color:#b8790e;}
+  .status-badge.assigned{background:rgba(52,211,153,.16);color:#0f8a5f;}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .icon-btn{width:32px;height:32px;border-radius:9px;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;}
+  .icon-btn.edit:hover{border-color:var(--indigo-2);background:var(--indigo-2);}
+  .icon-btn.edit:hover svg path{stroke:#fff;}
+  .icon-btn.del:hover{border-color:var(--coral);background:var(--coral);}
+  .icon-btn.del:hover svg path{stroke:#fff;}
+  .empty-row{padding:40px 26px;text-align:center;color:var(--muted);font-size:14px;}
+  .btn-mini{padding:8px 16px;border-radius:100px;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s ease;white-space:nowrap;}
+  .btn-mini.primary{border-color:var(--indigo-2);color:var(--indigo-2);}
+  .btn-mini.primary:hover{background:var(--indigo-2);color:#fff;}
+  .btn-mini.assign{border-color:#0f8a5f;color:#0f8a5f;}
+  .btn-mini.assign:hover{background:#0f8a5f;color:#fff;}
+  .btn-mini.unassign{border-color:var(--coral);color:var(--coral);}
+  .btn-mini.unassign:hover{background:var(--coral);color:#fff;}
+
+  /* ---------------- PROFILE TAB ---------------- */
+  .profile-banner-wrap{position:relative;margin-bottom:60px;}
+  .profile-banner{position:relative;height:200px;border-radius:20px;overflow:hidden;background:linear-gradient(120deg,var(--indigo),var(--indigo-2),var(--violet),var(--coral));background-size:220% 220%;animation:gradientShift 12s ease-in-out infinite;}
+  @keyframes gradientShift{0%,100%{background-position:0% 30%;}50%{background-position:100% 70%;}}
+  .profile-banner img{width:100%;height:100%;object-fit:cover;}
+  .banner-edit{position:absolute;top:14px;right:14px;background:rgba(24,26,42,.55);color:#fff;border:1px solid rgba(255,255,255,.4);padding:9px 16px;border-radius:100px;font-size:12.5px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);display:flex;align-items:center;gap:7px;z-index:2;}
+  .profile-head{position:absolute;bottom:-46px;left:30px;display:flex;align-items:flex-end;gap:16px;z-index:3;}
+  .profile-avatar-wrap{position:relative;width:96px;height:96px;flex:none;}
+  .profile-avatar{width:96px;height:96px;border-radius:50%;border:4px solid #fff;background:var(--cream);object-fit:cover;box-shadow:0 10px 24px -10px rgba(24,26,42,.4);}
+  .avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;}
+  .profile-head-txt{padding-bottom:6px;}
+  .profile-head-txt h2{font-size:19px;background:#fff;padding:4px 10px;border-radius:8px;display:inline-block;}
+  .profile-head-txt span{display:block;font-size:12px;color:var(--muted);background:#fff;padding:2px 10px;border-radius:8px;margin-top:4px;display:inline-block;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:24px 26px;}
+  .form-field{margin-bottom:16px;}
+  .form-field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--ink);}
+  .form-field input, .form-field select{width:100%;padding:12px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--cream);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s ease, background .2s ease;}
+  .form-field input:focus, .form-field select:focus{border-color:var(--indigo-2);background:#fff;}
+  .form-actions{padding:4px 26px 26px;display:flex;justify-content:flex-end;}
+  .btn-save{padding:13px 28px;border-radius:100px;border:none;background:linear-gradient(120deg,var(--indigo-2),var(--violet));color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:transform .2s ease, box-shadow .2s ease;}
+  .btn-save:hover{transform:translateY(-2px);box-shadow:0 14px 26px -10px rgba(92,86,224,.6);}
+
+  /* ---------------- QUESTIONS (inside CET modal) ---------------- */
+  .subject-heading{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--indigo-2);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--indigo-2);
+  }
+  .subject-heading:first-of-type{margin-top:0;}
+  .q-card{background:var(--cream);border-radius:14px;padding:16px 18px;margin-bottom:12px;display:flex;gap:14px;}
+  .q-num{width:26px;height:26px;border-radius:8px;background:#fff;color:var(--indigo-2);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:12px;flex:none;}
+  .q-body{flex:1;min-width:0;}
+  .q-text{font-weight:600;font-size:13.5px;margin-bottom:8px;}
+  .q-img{max-width:160px;border-radius:10px;margin-bottom:10px;display:block;border:1px solid var(--line);}
+  .q-options{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:8px;}
+  .q-opt{font-size:12px;color:var(--muted);padding:6px 10px;border-radius:8px;background:#fff;}
+  .q-opt.correct{background:rgba(52,211,153,.14);color:#0f8a5f;font-weight:600;}
+  .q-foot{display:flex;justify-content:space-between;align-items:center;}
+  .q-marks{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);}
+
+  /* ---------------- MODAL ---------------- */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(24,26,42,.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:200;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:22px;padding:32px;width:100%;max-width:440px;box-shadow:0 40px 80px -30px rgba(0,0,0,.5);animation:modalIn .3s cubic-bezier(.2,.7,.3,1);max-height:88vh;overflow-y:auto;}
+  .modal.wide{max-width:620px;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .modal h3{font-size:19px;font-weight:700;margin-bottom:6px;}
+  .modal p.sub{color:var(--muted);font-size:13.5px;margin-bottom:22px;}
+  .modal .field{margin-bottom:14px;}
+  .modal label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;}
+  .modal input, .modal select, .modal textarea{width:100%;padding:12px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--cream);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s ease, background .2s ease;}
+  .modal textarea{resize:vertical;min-height:64px;}
+  .modal input:focus, .modal select:focus, .modal textarea:focus{border-color:var(--indigo-2);background:#fff;}
+  .modal-actions{display:flex;gap:10px;margin-top:22px;}
+  .btn-cancel{flex:1;padding:12px;border-radius:100px;border:1.5px solid var(--line);background:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:'Sora',sans-serif;}
+  .btn-confirm{flex:1;padding:12px;border-radius:100px;border:none;background:var(--ink);color:#fff;font-weight:600;font-size:14px;cursor:pointer;font-family:'Sora',sans-serif;}
+  .field-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .option-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .option-row input[type=radio]{width:18px;height:18px;flex:none;accent-color:var(--indigo-2);}
+  .option-row input[type=text]{flex:1;}
+  .divider{border-top:1px solid var(--line);margin:18px 0;padding-top:18px;}
+
+  /* ---------------- CROP MODAL ---------------- */
+  .crop-stage{max-height:380px;overflow:hidden;background:#111;border-radius:14px;}
+  .crop-stage.avatar .cropper-view-box,
+  .crop-stage.avatar .cropper-face{border-radius:50%;}
+  .crop-stage.avatar .cropper-view-box{box-shadow:0 0 0 1px #fff;outline:0;}
+
+  .demo-flag{position:fixed;bottom:18px;right:18px;background:var(--ink);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:9px 16px;border-radius:100px;opacity:.85;z-index:300;}
+
+  @media(max-width:980px){
+    .sidebar{position:relative;top:0;left:0;bottom:auto;width:auto;margin:14px;height:auto;}
+    .main{margin-left:0;padding:0 16px 40px;}
+    .stats-row, .promo-row, .form-grid{grid-template-columns:1fr;}
+    table{display:block;overflow-x:auto;}
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark"><img src="logo_image/logo.png" alt="CrustExams logo"></div>
+    Crust<span>Exams</span>
+  </div>
+
+  <button class="nav-link active" data-tab="dashboard">
+    <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#8A8AA3" stroke-width="1.8"/><rect x="13" y="3" width="8" height="8" rx="2" stroke="#8A8AA3" stroke-width="1.8"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="#8A8AA3" stroke-width="1.8"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#8A8AA3" stroke-width="1.8"/></svg></span>
+    Dashboard
+  </button>
+  <button class="nav-link" data-tab="profile">
+    <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20a8 8 0 0116 0" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="4" stroke="#8A8AA3" stroke-width="1.8"/></svg></span>
+    Teacher Profile
+  </button>
+  <button class="nav-link" data-tab="subjects">
+    <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 19.5V6a2 2 0 012-2h11a1 1 0 011 1v13" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22a2 2 0 01-2-2v0a2 2 0 012-2h13" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    Create a Subject
+  </button>
+  <button class="nav-link" data-tab="cets">
+    <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    Create a CET
+  </button>
+  <button class="nav-link" data-tab="assign">
+    <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 19v-1a4 4 0 014-4h4a4 4 0 014 4v1" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="7" r="3" stroke="#8A8AA3" stroke-width="1.8"/></svg></span>
+    Assign CET
+  </button>
+
+  <div class="side-help">
+    <p>Teacher</p>
+    <span>Greenview Institute of Technology</span>
+    <div class="admin-chip">
+      <div class="admin-avatar" id="sideAvatar">R</div>
+      <div>
+        <b id="sideName">Riya Sharma</b>
+        <small id="sideEmail">riya.sharma@gvit.edu</small>
+      </div>
+    </div>
+    <form onsubmit="return false;">
+      <button type="submit" class="logout-btn" onclick="window.location.href='login.html'">Log out</button>
+    </form>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="banner" id="banner"></div>
+
+  <div class="topbar">
+    <div>
+      <div class="crumb" id="crumb">Pages / <b>Dashboard</b></div>
+      <h1 id="pageTitle">Dashboard</h1>
+    </div>
+    <div class="top-right">
+      <input class="search-box" placeholder="Type here...">
+      <div class="top-admin">
+        <div class="admin-avatar" id="topAvatar">R</div>
+        <span id="topName">Riya</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DASHBOARD TAB ================= -->
+  <section class="tab-panel active" id="tab-dashboard">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div><span>Subjects</span><b id="countSubjects">0</b></div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19.5V6a2 2 0 012-2h11a1 1 0 011 1v13" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div><span>CETs Created</span><b id="countCets">0</b></div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="stat-card">
+        <div><span>CETs Assigned</span><b id="countAssigned">0</b></div>
+        <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+
+    <div class="promo-row">
+      <div class="promo-card promo-a">
+        <div class="graphic">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M22 10L12 5 2 10l10 5 10-5z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txt">
+          <span>WELCOME BACK</span>
+          <h3 id="promoName">Riya Sharma</h3>
+          <p>Build a subject, write a CET under it, and assign it to your students — all from the tabs on the left.</p>
+        </div>
+      </div>
+      <div class="promo-b promo-card">
+        <h3>Start a new CET</h3>
+        <p>Create the question paper for a subject you teach.</p>
+        <button onclick="switchTab('cets')">Go to Create a CET →</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Your recent CETs</h2>
+          <p>The latest tests you've built.</p>
+        </div>
+      </div>
+      <div class="mini-list" id="recentCetsList"></div>
+    </div>
+  </section>
+
+  <!-- ================= PROFILE TAB ================= -->
+  <section class="tab-panel" id="tab-profile">
+    <div class="panel" style="overflow:visible;">
+      <div style="padding:26px 26px 0;">
+        <div class="profile-banner-wrap">
+          <div class="profile-banner" id="profileBanner">
+            <button type="button" class="banner-edit" onclick="document.getElementById('bannerFileInput').click()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              Change banner
+            </button>
+          </div>
+          <div class="profile-head">
+            <div class="profile-avatar-wrap">
+              <img class="profile-avatar" id="profileAvatarImg" src="https://api.dicebear.com/7.x/initials/svg?seed=Riya%20Sharma" alt="">
+              <div class="avatar-edit" onclick="document.getElementById('avatarFileInput').click()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div class="profile-head-txt">
+              <h2 id="profileHeadName">Riya Sharma</h2>
+              <span>Teacher · Greenview Institute of Technology</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this,'avatar')">
+      <input type="file" id="bannerFileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this,'banner')">
+
+      <form onsubmit="saveProfile(event)">
+        <div class="form-grid" style="padding-top:36px;">
+          <div class="form-field">
+            <label>Full name</label>
+            <input type="text" id="profFullName" value="Riya Sharma" required>
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input type="email" id="profEmail" value="riya.sharma@gvit.edu" required>
+          </div>
+          <div class="form-field">
+            <label>New password (optional)</label>
+            <input type="password" placeholder="Leave blank to keep current password" minlength="6">
+          </div>
+          <div class="form-field">
+            <label>Confirm new password</label>
+            <input type="password" placeholder="Re-enter new password" minlength="6">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= SUBJECTS TAB ================= -->
+  <section class="tab-panel" id="tab-subjects">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Subjects</h2>
+          <p>A subject belongs to one course + branch, so the same subject name can exist separately per branch.</p>
+        </div>
+        <button class="btn-add" onclick="openModal('addSubjectModal')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          Add Subject
+        </button>
+      </div>
+      <table>
+        <thead><tr><th>Subject</th><th>Course</th><th>Branch</th><th>Created by</th><th></th></tr></thead>
+        <tbody id="subjectRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= CETs TAB ================= -->
+  <section class="tab-panel" id="tab-cets">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Your CETs</h2>
+          <p>Build the question paper, then manage its questions.</p>
+        </div>
+        <button class="btn-add" onclick="openModal('addCetModal')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          Create CET
+        </button>
+      </div>
+      <table>
+        <thead><tr><th>Title</th><th>Course · Branch</th><th>Subjects covered</th><th>Duration</th><th>Questions</th><th>Status</th><th></th></tr></thead>
+        <tbody id="cetRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= ASSIGN CET TAB ================= -->
+  <section class="tab-panel" id="tab-assign">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Assign CET</h2>
+          <p>Assigning makes the CET available to every student on that course + branch + subject.</p>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Title</th><th>Course · Branch</th><th>Subjects covered</th><th>Questions</th><th>Status</th><th></th></tr></thead>
+        <tbody id="assignRows"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- ---------------- ADD SUBJECT MODAL ---------------- -->
+<div class="modal-overlay" id="addSubjectModal">
+  <div class="modal">
+    <h3>Add a Subject</h3>
+    <p class="sub">Pick the course + branch this subject belongs to.</p>
+    <form onsubmit="return addSubject(event)">
+      <div class="field"><label>Subject name</label><input type="text" id="newSubjectName" placeholder="e.g. Data Structures" required></div>
+      <div class="field">
+        <label>Course</label>
+        <select id="newSubjectCourse" required onchange="populateBranchSelect('newSubjectCourse','newSubjectBranch')">
+          <option value="">Choose a course</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Branch (optional)</label>
+        <select id="newSubjectBranch"><option value="">No branch</option></select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('addSubjectModal')">Cancel</button>
+        <button type="submit" class="btn-confirm">Add Subject</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ---------------- ADD CET MODAL ---------------- -->
+<div class="modal-overlay" id="addCetModal">
+  <div class="modal">
+    <h3>Create a CET</h3>
+    <p class="sub">Pick which batch of students this exam is for — you'll tag each question with its own subject afterwards.</p>
+    <form onsubmit="return addCet(event)">
+      <div class="field"><label>CET title</label><input type="text" id="newCetTitle" placeholder="e.g. Common Entrance Test 2026" required></div>
+      <div class="field">
+        <label>Course</label>
+        <select id="newCetCourse" required onchange="populateBranchSelect('newCetCourse','newCetBranch')">
+          <option value="">Choose a course</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Branch (optional)</label>
+        <select id="newCetBranch"><option value="">No branch</option></select>
+      </div>
+      <div class="field">
+        <label>Duration</label>
+        <div class="field-row2">
+          <input type="number" id="newCetHours" min="0" max="12" value="1" required>
+          <input type="number" id="newCetMinutes" min="0" max="59" value="0" required>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('addCetModal')">Cancel</button>
+        <button type="submit" class="btn-confirm">Create CET</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ---------------- MANAGE QUESTIONS MODAL ---------------- -->
+<div class="modal-overlay" id="questionsModal">
+  <div class="modal wide">
+    <h3 id="qModalTitle">Manage Questions</h3>
+    <p class="sub" id="qModalSub">Add MCQs one at a time.</p>
+    <div id="questionsList"></div>
+    <button class="btn-add" id="openAddQBtn" style="width:100%;justify-content:center;margin-top:6px;" onclick="openModal('addQuestionModal')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+      Add Question
+    </button>
+    <div class="modal-actions">
+      <button type="button" class="btn-cancel" onclick="closeModal('questionsModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------------- ADD QUESTION MODAL ---------------- -->
+<div class="modal-overlay" id="addQuestionModal">
+  <div class="modal">
+    <h3>Add a Question</h3>
+    <p class="sub">Tag the subject this question belongs to, then select the radio button next to the correct option.</p>
+    <form onsubmit="return addQuestion(event)">
+      <div class="field">
+        <label>Subject</label>
+        <select id="newQSubject" required></select>
+      </div>
+      <div class="field"><label>Question</label><textarea id="newQText" placeholder="Type the question here..." required></textarea></div>
+      <div class="option-row"><input type="radio" name="newQCorrect" value="a" required><input type="text" id="newQOptA" placeholder="Option A" required></div>
+      <div class="option-row"><input type="radio" name="newQCorrect" value="b"><input type="text" id="newQOptB" placeholder="Option B" required></div>
+      <div class="option-row"><input type="radio" name="newQCorrect" value="c"><input type="text" id="newQOptC" placeholder="Option C" required></div>
+      <div class="option-row"><input type="radio" name="newQCorrect" value="d"><input type="text" id="newQOptD" placeholder="Option D" required></div>
+      <div class="field-row2">
+        <div class="field"><label>Marks</label><input type="number" id="newQMarks" value="1" min="1" required></div>
+        <div class="field"><label>Image (optional)</label><input type="file" id="newQImage" accept="image/*"></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('addQuestionModal')">Cancel</button>
+        <button type="submit" class="btn-confirm">Add Question</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ---------------- CROP IMAGE MODAL ---------------- -->
+<div class="modal-overlay" id="cropModal">
+  <div class="modal" style="max-width:520px;">
+    <h3 id="cropModalTitle">Crop Image</h3>
+    <p class="sub">Drag to reposition, drag a corner to zoom, then save.</p>
+    <div class="crop-stage" id="cropStage">
+      <img id="cropperImage" style="max-width:100%;display:block;">
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-cancel" onclick="cancelCrop()">Cancel</button>
+      <button type="button" class="btn-confirm" onclick="confirmCrop()">Save Crop</button>
+    </div>
+  </div>
+</div>
+
+<div class="demo-flag">Design preview — no database connected</div>
+
+<script>
+  // ---------------- SAMPLE DATA (in-memory only) ----------------
+  let nextIds = { subject: 4, cet: 3, question: 100 };
+
+  const courses = [
+    { id: 1, name: 'B.Tech', branches: [{ id: 1, name: 'AI & DS' }, { id: 2, name: 'Automobile' }] },
+    { id: 2, name: 'B.C.A', branches: [] }
+  ];
+
+  let subjects = [
+    { id: 1, name: 'Data Structures', courseId: 1, branchId: 1, teacher: 'Riya Sharma', mine: true },
+    { id: 2, name: 'Data Structures', courseId: 1, branchId: 2, teacher: 'Riya Sharma', mine: true },
+    { id: 3, name: 'Maths', courseId: 1, branchId: 1, teacher: 'Riya Sharma', mine: true },
+    { id: 4, name: 'English', courseId: 1, branchId: 1, teacher: 'Riya Sharma', mine: true },
+    { id: 5, name: 'Programming Basics', courseId: 2, branchId: null, teacher: 'Aman Verma', mine: false }
+  ];
+
+  // A CET now belongs to a course+branch directly (a batch of students),
+  // and each QUESTION carries its own subjectId — so one CET can mix
+  // Maths + Data Structures + English questions in a single exam.
+  let cets = [
+    {
+      id: 1, title: 'Common Entrance Test 2026', courseId: 1, branchId: 1, duration: 90, status: 'assigned',
+      questions: [
+        { id: 1, subjectId: 3, text: 'What is 15% of 200?', a: '20', b: '30', c: '15', d: '25', correct: 'b', marks: 2, image: null },
+        { id: 2, subjectId: 1, text: 'Which data structure uses LIFO order?', a: 'Stack', b: 'Queue', c: 'Tree', d: 'Graph', correct: 'a', marks: 2, image: null },
+        { id: 3, subjectId: 1, text: 'What is the time complexity of binary search?', a: 'O(n)', b: 'O(log n)', c: 'O(n^2)', d: 'O(1)', correct: 'b', marks: 2, image: null },
+        { id: 4, subjectId: 4, text: 'Choose the correctly spelled word.', a: 'Recieve', b: 'Receive', c: 'Receeve', d: 'Receve', correct: 'b', marks: 1, image: null }
+      ]
+    },
+    {
+      id: 2, title: 'BCA Aptitude Test', courseId: 2, branchId: null, duration: 30, status: 'draft',
+      questions: []
+    }
+  ];
+
+  function courseName(id){ const c = courses.find(c => c.id === id); return c ? c.name : '—'; }
+  function branchName(courseId, branchId){
+    const c = courses.find(c => c.id === courseId);
+    if (!c || !branchId) return null;
+    const b = c.branches.find(b => b.id === branchId);
+    return b ? b.name : null;
+  }
+  function subjectById(id){ return subjects.find(s => s.id === id); }
+  function cetById(id){ return cets.find(c => c.id === id); }
+  function subjectsForCourseBranch(courseId, branchId){
+    return subjects.filter(s => s.courseId === courseId && (s.branchId || null) === (branchId || null));
+  }
+  function subjectsCoveredText(c){
+    const names = [...new Set(c.questions.map(q => { const s = subjectById(q.subjectId); return s ? s.name : null; }).filter(Boolean))];
+    return names.length ? names.join(', ') : null;
+  }
+
+  // ---------------- RENDER ----------------
+  function renderAll(){
+    renderStats();
+    renderRecentCets();
+    renderSubjects();
+    renderCourseOptions();
+    renderCetCourseOptions();
+    renderCets();
+    renderAssign();
+  }
+
+  function renderStats(){
+    animateCount('countSubjects', subjects.length);
+    animateCount('countCets', cets.length);
+    animateCount('countAssigned', cets.filter(c => c.status === 'assigned').length);
+  }
+
+  function animateCount(id, target){
+    const el = document.getElementById(id);
+    let cur = 0;
+    const step = Math.max(target / 24, 1);
+    el.textContent = '0';
+    const t = setInterval(() => {
+      cur += step;
+      if (cur >= target) { cur = target; clearInterval(t); }
+      el.textContent = Math.round(cur);
+    }, 25);
+  }
+
+  function renderRecentCets(){
+    const wrap = document.getElementById('recentCetsList');
+    if (cets.length === 0) { wrap.innerHTML = '<div class="mini-empty">No CETs yet — head to "Create a CET" to build your first one.</div>'; return; }
+    wrap.innerHTML = cets.slice(0, 5).map(c => {
+      const cName = courseName(c.courseId);
+      const bName = branchName(c.courseId, c.branchId);
+      const covered = subjectsCoveredText(c);
+      return `<div class="mini-row">
+        <div class="mini-avatar">${c.title.charAt(0).toUpperCase()}</div>
+        <div class="info" style="flex:1;">
+          <p>${c.title}</p>
+          <span>${cName}${bName ? ' · ' + bName : ''} · ${covered || 'no subjects yet'} · ${c.questions.length} questions</span>
+        </div>
+        <span class="status-badge ${c.status}">${c.status}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderSubjects(){
+    const tbody = document.getElementById('subjectRows');
+    if (subjects.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No subjects yet — click "Add Subject" to create your first one.</td></tr>'; return; }
+    tbody.innerHTML = subjects.map(s => {
+      const bName = branchName(s.courseId, s.branchId);
+      return `<tr>
+        <td><div class="name-cell">${s.name}</div></td>
+        <td><span class="course-badge">${courseName(s.courseId)}</span></td>
+        <td class="muted-cell">${bName || '—'}</td>
+        <td class="muted-cell">${s.teacher}</td>
+        <td>${s.mine ? `<div class="row-actions">
+            <button class="icon-btn del" title="Remove" onclick="deleteSubject(${s.id})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="#FF6E5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>` : '<span class="muted-cell">—</span>'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderCourseOptions(){
+    const sel = document.getElementById('newSubjectCourse');
+    sel.innerHTML = '<option value="">Choose a course</option>' + courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  }
+
+  function populateBranchSelect(courseSelectId, branchSelectId){
+    const courseId = parseInt(document.getElementById(courseSelectId).value, 10);
+    const branchSel = document.getElementById(branchSelectId);
+    const c = courses.find(c => c.id === courseId);
+    branchSel.innerHTML = '<option value="">No branch</option>' + (c ? c.branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('') : '');
+  }
+
+  function renderCetCourseOptions(){
+    const sel = document.getElementById('newCetCourse');
+    sel.innerHTML = '<option value="">Choose a course</option>' + courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  }
+
+  function renderCets(){
+    const tbody = document.getElementById('cetRows');
+    if (cets.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No CETs yet — click "Create CET" to build your first one.</td></tr>'; return; }
+    tbody.innerHTML = cets.map(c => {
+      const bName = branchName(c.courseId, c.branchId);
+      const covered = subjectsCoveredText(c);
+      return `<tr>
+        <td><div class="name-cell">${c.title}</div></td>
+        <td><span class="course-badge">${courseName(c.courseId)}${bName ? ' · ' + bName : ''}</span></td>
+        <td class="muted-cell">${covered || '—'}</td>
+        <td class="muted-cell">${c.duration} min</td>
+        <td class="muted-cell">${c.questions.length}</td>
+        <td><span class="status-badge ${c.status}">${c.status}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-mini primary" onclick="openQuestionsModal(${c.id})">Manage Questions</button>
+            <button class="icon-btn del" title="Remove" onclick="deleteCet(${c.id})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="#FF6E5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderAssign(){
+    const tbody = document.getElementById('assignRows');
+    if (cets.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No CETs yet — create one first.</td></tr>'; return; }
+    tbody.innerHTML = cets.map(c => {
+      const bName = branchName(c.courseId, c.branchId);
+      const covered = subjectsCoveredText(c);
+      const actionBtn = c.status === 'assigned'
+        ? `<button class="btn-mini unassign" onclick="toggleAssign(${c.id})">Unassign</button>`
+        : `<button class="btn-mini assign" onclick="toggleAssign(${c.id})">Assign</button>`;
+      return `<tr>
+        <td><div class="name-cell">${c.title}</div></td>
+        <td><span class="course-badge">${courseName(c.courseId)}${bName ? ' · ' + bName : ''}</span></td>
+        <td class="muted-cell">${covered || '—'}</td>
+        <td class="muted-cell">${c.questions.length}</td>
+        <td><span class="status-badge ${c.status}">${c.status}</span></td>
+        <td>${actionBtn}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ---------------- ACTIONS ----------------
+  function addSubject(e){
+    e.preventDefault();
+    const name = document.getElementById('newSubjectName').value.trim();
+    const courseId = parseInt(document.getElementById('newSubjectCourse').value, 10);
+    const branchId = document.getElementById('newSubjectBranch').value ? parseInt(document.getElementById('newSubjectBranch').value, 10) : null;
+    if (!name || !courseId) return false;
+    subjects.push({ id: nextIds.subject++, name, courseId, branchId, teacher: 'Riya Sharma', mine: true });
+    closeModal('addSubjectModal');
+    document.getElementById('newSubjectName').value = '';
+    renderSubjects(); renderStats();
+    showBanner('Subject added successfully.', true);
+    return false;
+  }
+
+  function deleteSubject(id){
+    if (!confirm('Remove this subject? Any questions tagged with it will be removed too.')) return;
+    subjects = subjects.filter(s => s.id !== id);
+    cets.forEach(c => { c.questions = c.questions.filter(q => q.subjectId !== id); });
+    renderAll();
+    showBanner('Subject removed.', true);
+  }
+
+  function addCet(e){
+    e.preventDefault();
+    const title = document.getElementById('newCetTitle').value.trim();
+    const courseId = parseInt(document.getElementById('newCetCourse').value, 10);
+    const branchId = document.getElementById('newCetBranch').value ? parseInt(document.getElementById('newCetBranch').value, 10) : null;
+    const hours = parseInt(document.getElementById('newCetHours').value || 0, 10);
+    const minutes = parseInt(document.getElementById('newCetMinutes').value || 0, 10);
+    if (!title || !courseId) return false;
+    const newCet = { id: nextIds.cet++, title, courseId, branchId, duration: hours * 60 + minutes, status: 'draft', questions: [] };
+    cets.push(newCet);
+    closeModal('addCetModal');
+    document.getElementById('newCetTitle').value = '';
+    renderCets(); renderAssign(); renderRecentCets(); renderStats();
+    showBanner('CET created — now add its questions, tagging each with its subject.', true);
+    openQuestionsModal(newCet.id);
+    return false;
+  }
+
+  function deleteCet(id){
+    if (!confirm('Delete this CET and all its questions?')) return;
+    cets = cets.filter(c => c.id !== id);
+    renderAll();
+    showBanner('CET removed.', true);
+  }
+
+  function toggleAssign(id){
+    const c = cetById(id);
+    if (!c) return;
+    if (c.status === 'draft') {
+      if (c.questions.length === 0) { alert('Add at least one question before assigning.'); return; }
+      c.status = 'assigned';
+      showBanner('CET assigned to students.', true);
+    } else {
+      if (!confirm('Unassign this CET? Students will no longer see it.')) return;
+      c.status = 'draft';
+      showBanner('CET unassigned.', true);
+    }
+    renderCets(); renderAssign(); renderStats(); renderRecentCets();
+  }
+
+  let activeCetId = null;
+  function openQuestionsModal(cetId){
+    activeCetId = cetId;
+    const c = cetById(cetId);
+    const bName = branchName(c.courseId, c.branchId);
+    document.getElementById('qModalTitle').textContent = c.title;
+    document.getElementById('qModalSub').textContent = courseName(c.courseId) + (bName ? ' · ' + bName : '') + ' · ' + c.duration + ' min · ' + c.questions.length + ' questions';
+
+    const subjSel = document.getElementById('newQSubject');
+    const available = subjectsForCourseBranch(c.courseId, c.branchId);
+    subjSel.innerHTML = available.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+    const addQBtn = document.getElementById('openAddQBtn');
+    if (addQBtn) {
+      addQBtn.disabled = available.length === 0;
+      addQBtn.title = available.length === 0 ? 'Create a subject for this course/branch first' : '';
+    }
+
+    renderQuestions();
+    openModal('questionsModal');
+  }
+
+  function renderQuestions(){
+    const c = cetById(activeCetId);
+    const wrap = document.getElementById('questionsList');
+    if (!c || c.questions.length === 0) { wrap.innerHTML = '<div class="mini-empty">No questions yet — click "Add Question" below.</div>'; return; }
+
+    const sorted = [...c.questions].sort((q1, q2) => {
+      const n1 = (subjectById(q1.subjectId) || {}).name || '';
+      const n2 = (subjectById(q2.subjectId) || {}).name || '';
+      return n1.localeCompare(n2);
+    });
+
+    let html = '';
+    let lastSubject = null;
+    let num = 1;
+    sorted.forEach(q => {
+      const subName = (subjectById(q.subjectId) || {}).name || 'Unknown subject';
+      if (subName !== lastSubject) {
+        html += `<div class="subject-heading">${escapeHtml(subName)}</div>`;
+        lastSubject = subName;
+      }
+      html += `
+      <div class="q-card">
+        <div class="q-num">${num++}</div>
+        <div class="q-body">
+          <div class="q-text">${escapeHtml(q.text)}</div>
+          ${q.image ? `<img class="q-img" src="${q.image}" alt="">` : ''}
+          <div class="q-options">
+            <div class="q-opt${q.correct === 'a' ? ' correct' : ''}">A. ${escapeHtml(q.a)}</div>
+            <div class="q-opt${q.correct === 'b' ? ' correct' : ''}">B. ${escapeHtml(q.b)}</div>
+            <div class="q-opt${q.correct === 'c' ? ' correct' : ''}">C. ${escapeHtml(q.c)}</div>
+            <div class="q-opt${q.correct === 'd' ? ' correct' : ''}">D. ${escapeHtml(q.d)}</div>
+          </div>
+          <div class="q-foot">
+            <span class="q-marks">${q.marks} mark${q.marks !== 1 ? 's' : ''}</span>
+            <button class="icon-btn del" title="Remove" onclick="deleteQuestion(${q.id})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13" stroke="#FF6E5E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+    });
+    wrap.innerHTML = html;
+  }
+
+  function addQuestion(e){
+    e.preventDefault();
+    const c = cetById(activeCetId);
+    if (!c) return false;
+    const subjectId = parseInt(document.getElementById('newQSubject').value, 10);
+    const text = document.getElementById('newQText').value.trim();
+    const a = document.getElementById('newQOptA').value.trim();
+    const b = document.getElementById('newQOptB').value.trim();
+    const cc = document.getElementById('newQOptC').value.trim();
+    const d = document.getElementById('newQOptD').value.trim();
+    const correctRadio = document.querySelector('input[name="newQCorrect"]:checked');
+    const marks = parseInt(document.getElementById('newQMarks').value || 1, 10);
+    if (!subjectId || !text || !a || !b || !cc || !d || !correctRadio) return false;
+
+    const fileInput = document.getElementById('newQImage');
+    const finish = (imageDataUrl) => {
+      c.questions.push({ id: nextIds.question++, subjectId, text, a, b, c: cc, d, correct: correctRadio.value, marks, image: imageDataUrl || null });
+      closeModal('addQuestionModal');
+      document.getElementById('newQText').value = '';
+      document.getElementById('newQOptA').value = '';
+      document.getElementById('newQOptB').value = '';
+      document.getElementById('newQOptC').value = '';
+      document.getElementById('newQOptD').value = '';
+      document.getElementById('newQImage').value = '';
+      renderQuestions(); renderCets(); renderAssign(); renderRecentCets(); renderStats();
+      showBanner('Question added successfully.', true);
+      const bName = branchName(c.courseId, c.branchId);
+      document.getElementById('qModalSub').textContent = courseName(c.courseId) + (bName ? ' · ' + bName : '') + ' · ' + c.duration + ' min · ' + c.questions.length + ' questions';
+    };
+
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (ev) => finish(ev.target.result);
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      finish(null);
+    }
+    return false;
+  }
+
+  function deleteQuestion(qId){
+    const c = cetById(activeCetId);
+    if (!c) return;
+    if (!confirm('Remove this question?')) return;
+    c.questions = c.questions.filter(q => q.id !== qId);
+    renderQuestions(); renderCets(); renderAssign(); renderRecentCets(); renderStats();
+    showBanner('Question removed.', true);
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---------------- PROFILE (crop-then-apply) ----------------
+  let cropper = null;
+  let cropTarget = null;
+
+  function handleFileSelect(input, target){
+    const file = input.files[0];
+    if (!file) return;
+    cropTarget = target;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById('cropperImage').src = e.target.result;
+      document.getElementById('cropModalTitle').textContent = target === 'avatar' ? 'Crop your photo' : 'Crop your banner';
+      document.getElementById('cropStage').className = 'crop-stage ' + target;
+      openModal('cropModal');
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(document.getElementById('cropperImage'), {
+        aspectRatio: target === 'avatar' ? 1 : 4.2,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 1,
+        background: false,
+        guides: false
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function cancelCrop(){
+    if (cropper) { cropper.destroy(); cropper = null; }
+    document.getElementById('avatarFileInput').value = '';
+    document.getElementById('bannerFileInput').value = '';
+    closeModal('cropModal');
+  }
+
+  function confirmCrop(){
+    if (!cropper) return;
+    const size = cropTarget === 'avatar' ? { width: 400, height: 400 } : { width: 1200, height: 285 };
+    const dataUrl = cropper.getCroppedCanvas(size).toDataURL('image/png');
+    if (cropTarget === 'avatar') {
+      document.getElementById('profileAvatarImg').src = dataUrl;
+      showBanner('Profile picture updated.', true);
+    } else {
+      const banner = document.getElementById('profileBanner');
+      banner.style.backgroundImage = `url(${dataUrl})`;
+      banner.style.backgroundSize = 'cover';
+      banner.style.backgroundPosition = 'center';
+      banner.style.animation = 'none';
+      showBanner('Banner updated.', true);
+    }
+    cropper.destroy();
+    cropper = null;
+    closeModal('cropModal');
+  }
+
+  function saveProfile(e){
+    e.preventDefault();
+    const name = document.getElementById('profFullName').value.trim();
+    document.getElementById('profileHeadName').textContent = name;
+    document.getElementById('promoName').textContent = name;
+    document.getElementById('sideName').textContent = name;
+    document.getElementById('topName').textContent = name.split(' ')[0];
+    const initial = name.charAt(0).toUpperCase();
+    document.getElementById('sideAvatar').textContent = initial;
+    document.getElementById('topAvatar').textContent = initial;
+    showBanner('Profile updated successfully.', true);
+    return false;
+  }
+
+  // ---------------- TABS / MODALS / BANNER ----------------
+  const tabLabels = { dashboard: 'Dashboard', profile: 'Teacher Profile', subjects: 'Create a Subject', cets: 'Create a CET', assign: 'Assign CET' };
+  function switchTab(tab){
+    document.querySelectorAll('.nav-link').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('pageTitle').textContent = tabLabels[tab];
+    document.getElementById('crumb').innerHTML = 'Pages / <b>' + tabLabels[tab] + '</b>';
+  }
+  document.querySelectorAll('.nav-link').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+
+  function openModal(id){ document.getElementById(id).classList.add('show'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
+  });
+
+  function showBanner(msg, ok){
+    const b = document.getElementById('banner');
+    b.style.display = 'flex';
+    b.textContent = msg;
+    b.style.background = ok ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.1)';
+    b.style.color = ok ? '#15803d' : '#b91c1c';
+  }
+
+  renderAll();
+</script>
+</body>
+</html>

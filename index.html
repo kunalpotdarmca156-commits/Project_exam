@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrustExams — Smart CET Platform for Colleges</title>
+<link rel="icon" type="image/png" href="crustexams-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#181A2A;
+    --indigo:#3D3AA8;
+    --indigo-2:#5C56E0;
+    --violet:#8A63F3;
+    --amber:#FFB648;
+    --coral:#FF6E5E;
+    --cream:#F7F6FB;
+    --paper:#FFFFFF;
+    --muted:#6C6C86;
+    --line:#E7E5F3;
+    --radius:22px;
+    --maxw:1220px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:var(--cream);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--indigo-2);font-weight:600;
+  }
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(255,182,72,.25);}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:15px 30px;border-radius:100px;font-weight:600;font-size:15px;
+    border:none;cursor:pointer;transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+    font-family:'Sora',sans-serif;
+  }
+  .btn-primary{background:var(--ink);color:#fff;box-shadow:0 10px 24px -8px rgba(24,26,42,.5);}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 16px 30px -8px rgba(24,26,42,.55);}
+  .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.55);backdrop-filter:blur(6px);}
+  .btn-ghost:hover{background:rgba(255,255,255,.26);transform:translateY(-3px);}
+  .btn-dark{background:var(--indigo-2);color:#fff;box-shadow:0 10px 24px -10px rgba(92,86,224,.7);}
+  .btn-dark:hover{transform:translateY(-3px);box-shadow:0 16px 32px -10px rgba(92,86,224,.8);}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,246,251,.75);backdrop-filter:blur(14px);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s ease, box-shadow .3s ease, background .3s ease;
+  }
+  header.scrolled{border-color:var(--line);box-shadow:0 6px 24px -18px rgba(24,26,42,.4);background:rgba(247,246,251,.92);}
+  nav{display:flex;align-items:center;justify-content:space-between;height:82px;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Sora',sans-serif;font-weight:800;font-size:22px;}
+  .logo-mark{
+    width:40px;height:40px;border-radius:11px;
+    background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 14px -4px rgba(24,26,42,.25);
+    position:relative;overflow:hidden;
+  }
+  .logo-mark img{width:100%;height:100%;object-fit:contain;display:block;}
+  .logo span{color:var(--indigo-2);}
+  .nav-links{display:flex;gap:36px;align-items:center;}
+  .nav-links a{
+    position:relative;font-weight:500;font-size:15px;color:var(--ink);
+    padding:6px 0;
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--indigo-2);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+  .login-btn{
+    padding:10px 22px;border-radius:100px;font-weight:600;font-size:14.5px;
+    border:1.5px solid var(--ink);transition:all .25s ease;
+  }
+  .login-btn:hover{background:var(--ink);color:#fff;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;overflow:hidden;
+    background:linear-gradient(120deg,var(--indigo) 0%, var(--indigo-2) 55%, var(--violet) 100%);
+    padding:90px 0 150px;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.16) 1.4px, transparent 1.4px);
+    background-size:26px 26px;
+    -webkit-mask-image:radial-gradient(ellipse at 70% 30%, black 0%, transparent 65%);
+            mask-image:radial-gradient(ellipse at 70% 30%, black 0%, transparent 65%);
+    opacity:.7;
+  }
+  .blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.35;animation:float 9s ease-in-out infinite;}
+  .blob1{width:220px;height:220px;background:var(--amber);top:-60px;right:12%;animation-delay:0s;}
+  .blob2{width:140px;height:140px;background:var(--coral);bottom:40px;right:32%;animation-delay:1.4s;}
+  .blob3{width:90px;height:90px;background:#fff;top:38%;right:6%;animation-delay:.6s;}
+  @keyframes float{0%,100%{transform:translateY(0px);}50%{transform:translateY(-22px);}}
+
+  /* ---------- ANIMATED WAVE (two-layer scrolling tile, solid colors) ---------- */
+  .wave-wrap{position:absolute;left:0;width:100%;height:110px;overflow:hidden;line-height:0;z-index:1;pointer-events:none;}
+  .wave-wrap.bottom{bottom:-1px;}
+  .wave-wrap.top{top:-1px;}
+  .wave-layer{position:absolute;top:0;left:0;height:100%;width:200%;display:flex;will-change:transform;}
+  .wave-layer svg{width:50%;height:100%;flex:none;display:block;}
+  .wave-layer.back{animation:waveScroll 24s linear infinite;}
+  .wave-layer.front{animation:waveScroll 15s linear infinite;}
+  @keyframes waveScroll{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wave-layer{animation:none;}
+    .blob{animation:none;}
+  }
+
+  .hero-inner{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;position:relative;z-index:2;}
+  .hero h1{
+    font-size:56px;line-height:1.06;color:#fff;font-weight:800;margin:18px 0 22px;letter-spacing:-.5px;
+  }
+  .hero h1 em{font-style:normal;color:var(--amber);}
+  .hero p{color:rgba(255,255,255,.82);font-size:17px;line-height:1.65;max-width:480px;margin-bottom:34px;}
+  .hero-btns{display:flex;gap:16px;flex-wrap:wrap;}
+  .hero-stats{display:flex;gap:34px;margin-top:48px;}
+  .hero-stats div{color:#fff;}
+  .hero-stats b{display:block;font-family:'Sora',sans-serif;font-size:26px;font-weight:700;}
+  .hero-stats span{font-size:12.5px;color:rgba(255,255,255,.7);}
+
+  /* Hero illustration */
+  .illust{position:relative;width:100%;max-width:480px;justify-self:end;}
+  .illust-card{
+    background:#fff;border-radius:20px;box-shadow:0 30px 60px -20px rgba(20,10,60,.55);
+    padding:22px;transform:rotate(-2deg);animation:sway 6s ease-in-out infinite;
+  }
+  @keyframes sway{0%,100%{transform:rotate(-2deg) translateY(0px);}50%{transform:rotate(-1deg) translateY(-10px);}}
+  .illust-bar{display:flex;gap:6px;margin-bottom:16px;}
+  .illust-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);}
+  .illust-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--cream);margin-bottom:10px;}
+  .illust-row .qn{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--indigo-2);font-weight:600;width:26px;}
+  .illust-row .bars{flex:1;height:8px;border-radius:6px;background:var(--line);overflow:hidden;}
+  .illust-row .bars i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo-2),var(--violet));border-radius:6px;}
+  .check-badge{
+    position:absolute;top:-18px;right:-18px;width:64px;height:64px;border-radius:50%;
+    background:var(--amber);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 24px -6px rgba(255,182,72,.7);animation:pop 2.6s ease-in-out infinite;
+  }
+  @keyframes pop{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+  .timer-chip{
+    position:absolute;bottom:-20px;left:-22px;background:var(--ink);color:#fff;
+    padding:10px 16px;border-radius:14px;font-family:'IBM Plex Mono',monospace;font-size:13px;
+    display:flex;align-items:center;gap:8px;box-shadow:0 14px 26px -8px rgba(0,0,0,.5);
+  }
+  .timer-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:blink 1.4s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+  /* ---------- SECTION GENERIC ---------- */
+  section{padding:110px 0;}
+  .sec-head{max-width:640px;margin-bottom:56px;}
+  .sec-head h2{font-size:38px;font-weight:700;line-height:1.15;margin-top:14px;letter-spacing:-.5px;}
+  .sec-head p{color:var(--muted);margin-top:16px;font-size:16px;line-height:1.6;}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- ABOUT ---------- */
+  .about{display:grid;grid-template-columns:.95fr 1.05fr;gap:70px;align-items:center;}
+  .about-graphic{position:relative;background:var(--paper);border-radius:var(--radius);padding:36px;border:1px solid var(--line);}
+  .flow{display:flex;flex-direction:column;gap:0;}
+  .flow-step{display:flex;gap:16px;padding:16px 0;position:relative;}
+  .flow-step:not(:last-child)::after{
+    content:"";position:absolute;left:19px;top:52px;bottom:-4px;width:2px;
+    background:repeating-linear-gradient(to bottom, var(--line) 0 6px, transparent 6px 12px);
+  }
+  .flow-num{
+    width:40px;height:40px;border-radius:50%;flex:none;
+    background:var(--cream);border:2px solid var(--indigo-2);color:var(--indigo-2);
+    display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;
+    z-index:1;
+  }
+  .flow-step:nth-child(2) .flow-num{border-color:var(--violet);color:var(--violet);}
+  .flow-step:nth-child(3) .flow-num{border-color:var(--amber);color:#b8790e;}
+  .flow-text h4{font-size:15.5px;margin-bottom:4px;font-weight:700;}
+  .flow-text p{font-size:14px;color:var(--muted);line-height:1.5;}
+  .about p.lead{color:var(--muted);font-size:16.5px;line-height:1.7;margin-top:18px;}
+
+  /* ---------- ROLE CARDS ---------- */
+  .roles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .role-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:34px 30px;transition:transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+    position:relative;overflow:hidden;
+  }
+  .role-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:5px;
+    background:linear-gradient(90deg,var(--indigo-2),var(--violet));
+    transform:scaleX(0);transform-origin:left;transition:transform .4s ease;
+  }
+  .role-card:hover{transform:translateY(-8px);box-shadow:0 26px 50px -24px rgba(24,26,42,.3);border-color:transparent;}
+  .role-card:hover::before{transform:scaleX(1);}
+  .role-icon{
+    width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+    margin-bottom:22px;
+  }
+  .role-card:nth-child(1) .role-icon{background:rgba(61,58,168,.1);}
+  .role-card:nth-child(2) .role-icon{background:rgba(138,99,243,.12);}
+  .role-card:nth-child(3) .role-icon{background:rgba(255,182,72,.18);}
+  .role-icon svg{width:26px;height:26px;}
+  .role-card h3{font-size:20px;margin-bottom:10px;font-weight:700;}
+  .role-card p{color:var(--muted);font-size:14.5px;line-height:1.65;margin-bottom:18px;}
+  .role-card ul li{
+    font-size:13.5px;color:var(--ink);padding-left:20px;position:relative;margin-bottom:9px;
+  }
+  .role-card ul li::before{
+    content:"";position:absolute;left:0;top:6px;width:9px;height:9px;border-radius:3px;background:var(--amber);
+  }
+  .role-tag{
+    display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+    padding:5px 12px;border-radius:100px;background:var(--ink);color:#fff;text-transform:uppercase;
+  }
+
+  /* ---------- STATS ---------- */
+  .stats{
+    background:linear-gradient(120deg,var(--ink),#242645);
+    border-radius:40px;color:#fff;position:relative;overflow:hidden;
+  }
+  .stats::after{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.08) 1.4px, transparent 1.4px);
+    background-size:24px 24px;
+    -webkit-mask-image:radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);
+            mask-image:radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);
+  }
+  .stats-inner{padding:70px 40px;text-align:center;position:relative;z-index:1;}
+  .stats-inner h2{font-size:30px;font-weight:700;margin-bottom:52px;}
+  .stats-inner h2 span{color:var(--amber);}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .stat b{
+    font-family:'Sora',sans-serif;font-size:42px;font-weight:800;display:block;
+    background:linear-gradient(90deg,#fff,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .stat span{font-size:13.5px;color:rgba(255,255,255,.65);letter-spacing:.03em;}
+
+  /* ---------- WHY ---------- */
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .why-card{padding:28px 22px;border-radius:18px;background:var(--paper);border:1px solid var(--line);text-align:left;transition:transform .3s ease;}
+  .why-card:hover{transform:translateY(-6px);}
+  .why-card .n{font-family:'IBM Plex Mono',monospace;color:var(--indigo-2);font-size:13px;font-weight:600;margin-bottom:14px;display:block;}
+  .why-card h4{font-size:16px;margin-bottom:8px;font-weight:700;}
+  .why-card p{font-size:13.5px;color:var(--muted);line-height:1.55;}
+
+  /* ---------- CTA ---------- */
+  .cta{
+    background:linear-gradient(120deg,var(--coral),var(--amber));
+    border-radius:36px;padding:64px 60px;display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;
+    position:relative;overflow:hidden;
+  }
+  .cta::before{content:"✓";position:absolute;font-family:'Sora',sans-serif;font-size:260px;font-weight:800;color:rgba(255,255,255,.14);right:-20px;top:-70px;line-height:1;}
+  .cta h2{color:#fff;font-size:32px;font-weight:800;max-width:480px;position:relative;z-index:1;}
+  .cta p{color:rgba(255,255,255,.85);margin-top:10px;font-size:15px;}
+  .cta .btn-primary{background:var(--ink);position:relative;z-index:1;}
+
+  /* ---------- FOOTER ---------- */
+  .footer-wave{height:110px;background:var(--cream);position:relative;margin-top:-1px;overflow:hidden;}
+  footer{background:var(--ink);color:#fff;padding:64px 0 26px;}
+  .footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.2fr;gap:40px;padding-bottom:50px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .footer-grid h5{font-family:'Sora',sans-serif;font-size:15px;margin-bottom:18px;position:relative;display:inline-block;}
+  .footer-grid h5::after{content:"";position:absolute;left:0;bottom:-8px;width:26px;height:2px;background:var(--amber);}
+  .footer-grid p{color:rgba(255,255,255,.6);font-size:14px;line-height:1.7;}
+  .footer-grid ul li{margin-bottom:11px;}
+  .footer-grid ul li a{color:rgba(255,255,255,.7);font-size:14px;transition:color .2s ease;}
+  .footer-grid ul li a:hover{color:var(--amber);}
+  .socials{display:flex;gap:12px;margin-top:20px;}
+  .socials a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;transition:background .2s ease, transform .2s ease;}
+  .socials a:hover{background:var(--indigo-2);transform:translateY(-3px);}
+  .socials svg{width:15px;height:15px;}
+  .nl-form{display:flex;margin-top:14px;border-radius:100px;overflow:hidden;background:rgba(255,255,255,.08);}
+  .nl-form input{flex:1;background:transparent;border:none;padding:12px 16px;color:#fff;font-size:13.5px;outline:none;}
+  .nl-form input::placeholder{color:rgba(255,255,255,.45);}
+  .nl-form button{background:var(--amber);border:none;padding:0 18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;font-size:13px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:10px;}
+  .foot-bottom a{color:var(--amber);}
+
+  /* Back to top */
+  .totop{
+    position:fixed;bottom:28px;right:28px;width:48px;height:48px;border-radius:50%;
+    background:var(--indigo-2);color:#fff;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 24px -6px rgba(92,86,224,.6);opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;z-index:60;
+  }
+  .totop.show{opacity:1;pointer-events:auto;}
+  .totop:hover{transform:translateY(-4px);}
+
+  @media(max-width:980px){
+    .hero-inner{grid-template-columns:1fr;}
+    .illust{justify-self:start;max-width:400px;margin-top:20px;}
+    .nav-links{display:none;}
+    .about{grid-template-columns:1fr;}
+    .roles-grid{grid-template-columns:1fr;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+    .why-grid{grid-template-columns:repeat(2,1fr);}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .hero h1{font-size:40px;}
+    .cta{padding:44px 30px;}
+  }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <nav class="wrap">
+    <div class="logo">
+      <div class="logo-mark">
+        <img src="logo_image/logo.png" alt="CrustExams logo">
+      </div>
+      Crust<span>Exams</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About CET</a></li>
+      <li><a href="#roles">Panels</a></li>
+      <li><a href="#how">How it Works</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="login-btn">Log In</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="wrap hero-inner">
+    <div>
+      <span class="eyebrow">College Entrance Test Platform</span>
+      <h1>Every college.<br>Every test.<br>One <em>logic</em>.</h1>
+      <p>CrustExams is where colleges run their Common Entrance Tests end to end — admins set up the college, teachers build the papers, students sit the test. No paper, no chaos, no spreadsheets.</p>
+      <div class="hero-btns">
+        <a href="#roles" class="btn btn-primary">Explore the panels →</a>
+        <a href="#about" class="btn btn-ghost">What is CrustExams?</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>3</b><span>Role-based panels</span></div>
+        <div><b>100%</b><span>Online &amp; auto-graded</span></div>
+        <div><b>0</b><span>Paper wasted</span></div>
+      </div>
+    </div>
+    <div class="illust">
+      <div class="illust-card">
+        <div class="illust-bar"><i></i><i></i><i></i></div>
+        <div class="illust-row"><span class="qn">Q1</span><span class="bars"><i style="width:80%"></i></span></div>
+        <div class="illust-row"><span class="qn">Q2</span><span class="bars"><i style="width:55%"></i></span></div>
+        <div class="illust-row"><span class="qn">Q3</span><span class="bars"><i style="width:92%"></i></span></div>
+        <div class="illust-row"><span class="qn">Q4</span><span class="bars"><i style="width:35%"></i></span></div>
+      </div>
+      <div class="check-badge">
+        <svg viewBox="0 0 24 24" fill="none" width="26" height="26"><path d="M4 12L9.5 17.5L20 6" stroke="#181A2A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="timer-chip"><span class="dot"></span> Test in progress · 24:59</div>
+    </div>
+  </div>
+  <div class="wave-wrap bottom">
+    <div class="wave-layer back">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,55 C240,15 480,95 720,55 C960,15 1200,95 1440,55 L1440,120 L0,120 Z" fill="rgba(255,255,255,0.35)"/></svg>
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,55 C240,15 480,95 720,55 C960,15 1200,95 1440,55 L1440,120 L0,120 Z" fill="rgba(255,255,255,0.35)"/></svg>
+    </div>
+    <div class="wave-layer front">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,65 C240,105 480,25 720,65 C960,105 1200,25 1440,65 L1440,120 L0,120 Z" fill="#F7F6FB"/></svg>
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,65 C240,105 480,25 720,65 C960,105 1200,25 1440,65 L1440,120 L0,120 Z" fill="#F7F6FB"/></svg>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap about">
+    <div class="reveal">
+      <span class="eyebrow">What is CET?</span>
+      <h2 class="sec-head" style="margin-bottom:0;">A Common Entrance Test, run entirely online.</h2>
+      <p class="lead">Colleges use a CET to admit students fairly, based on a single standardised exam instead of a hundred different processes. CrustExams gives every college its own private space to run that test — from onboarding its own admin, to teachers writing question papers, to students logging in and getting scored automatically.</p>
+      <p class="lead">Every college that joins CrustExams works inside its own account. Nothing is shared between colleges — except the platform that makes it all run.</p>
+    </div>
+    <div class="about-graphic reveal">
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-num">01</div>
+          <div class="flow-text"><h4>College Admin sets up</h4><p>Registers the college, adds teacher accounts, adds student accounts, and defines who can create tests.</p></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">02</div>
+          <div class="flow-text"><h4>Teachers build the CET</h4><p>Create question papers, set duration and marking rules, and assign the test to specific batches of students.</p></div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">03</div>
+          <div class="flow-text"><h4>Students take the test</h4><p>Log in, attempt the CET within the given time, and get results the moment the test is submitted.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="roles" style="padding-top:0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Three panels, one platform</span>
+      <h2>Built around who does what.</h2>
+      <p>CrustExams isn't one dashboard trying to be everything — it's three focused panels, each built for the person using it.</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card reveal">
+        <div class="role-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V7l-8-4z" stroke="#3D3AA8" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <h3>College Admin</h3>
+        <p>The account that owns the college's space on CrustExams and keeps it running.</p>
+        <ul>
+          <li>Register the college on CrustExams</li>
+          <li>Add and remove Teacher accounts</li>
+          <li>Add and remove Student accounts</li>
+          <li>Oversee every CET held by the college</li>
+        </ul>
+        <span class="role-tag">Manages the college</span>
+      </div>
+      <div class="role-card reveal">
+        <div class="role-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5V6a2 2 0 012-2h11a1 1 0 011 1v13" stroke="#8A63F3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22a2 2 0 01-2-2v0a2 2 0 012-2h13" stroke="#8A63F3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Teacher</h3>
+        <p>Added by their College Admin, teachers are the ones who actually build each CET.</p>
+        <ul>
+          <li>Create question papers for a CET</li>
+          <li>Set duration, marks and cut-offs</li>
+          <li>Assign tests to student batches</li>
+          <li>Review scores once a test closes</li>
+        </ul>
+        <span class="role-tag">Creates the test</span>
+      </div>
+      <div class="role-card reveal">
+        <div class="role-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19v-1a4 4 0 014-4h4a4 4 0 014 4v1" stroke="#B8790E" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="7" r="3" stroke="#B8790E" stroke-width="1.8"/></svg></div>
+        <h3>Student</h3>
+        <p>Added by their College Admin, students log in only to attempt the CET assigned to them.</p>
+        <ul>
+          <li>Log in with college-issued credentials</li>
+          <li>Attempt the CET within the time limit</li>
+          <li>Get results the moment it's submitted</li>
+          <li>Nothing to configure — just log in and write</li>
+        </ul>
+        <span class="role-tag">Takes the test</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stats-inner">
+        <h2>Why colleges are moving their CET <span>online</span></h2>
+        <div class="stats-grid">
+          <div class="stat"><b data-count="0">0</b><span>Universal — any college can join</span></div>
+          <div class="stat"><b data-count="3">0</b><span>Role-based panels</span></div>
+          <div class="stat"><b data-count="100" data-suffix="%">0</b><span>Auto-evaluated results</span></div>
+          <div class="stat"><b data-count="24" data-suffix="/7">0</b><span>Access from anywhere</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Why CrustExams</span>
+      <h2>Everything a CET actually needs.</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <span class="n">01</span>
+        <h4>Universal onboarding</h4>
+        <p>Any college can register and get its own admin, teacher and student space — independent of every other college on CrustExams.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="n">02</span>
+        <h4>Controlled access</h4>
+        <p>Only the College Admin can create Teacher and Student logins, so every account on the platform is verified by someone accountable.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="n">03</span>
+        <h4>Instant results</h4>
+        <p>Objective questions are graded the second a student submits — no manual checking, no delays in declaring a CET result.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="n">04</span>
+        <h4>One test, one timer</h4>
+        <p>Every student sees the same paper under the same time limit, so the CET stays fair and comparable across the batch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="padding-top:0;">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div>
+        <h2>Bring your college's CET onto CrustExams.</h2>
+        <p>Register your college, add your teachers, and let students start writing — all from one platform.</p>
+      </div>
+      <a href="register.html" class="btn btn-primary">Register your college →</a>
+    </div>
+  </div>
+</section>
+
+<div class="footer-wave">
+  <div class="wave-wrap top">
+    <div class="wave-layer back">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,55 C240,15 480,95 720,55 C960,15 1200,95 1440,55 L1440,120 L0,120 Z" fill="#2A2C4A"/></svg>
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,55 C240,15 480,95 720,55 C960,15 1200,95 1440,55 L1440,120 L0,120 Z" fill="#2A2C4A"/></svg>
+    </div>
+    <div class="wave-layer front">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,65 C240,105 480,25 720,65 C960,105 1200,25 1440,65 L1440,120 L0,120 Z" fill="#181A2A"/></svg>
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,65 C240,105 480,25 720,65 C960,105 1200,25 1440,65 L1440,120 L0,120 Z" fill="#181A2A"/></svg>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:16px;">
+          <div class="logo-mark"><img src="logo_image/logo.png" alt="CrustExams logo"></div>
+          Crust<span style="color:var(--amber);">Exams</span>
+        </div>
+        <p>A CET platform built for colleges — one admin panel, one teacher panel, one student panel, working together.</p>
+        <div class="socials">
+          <a href="#"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.2c0-1 .3-1.6 1.7-1.6h1.7V3.7C16.6 3.6 15.6 3.5 14.5 3.5c-2.6 0-4.4 1.6-4.4 4.5v2.3H7.3v3.3H10V22h3.5z"/></svg></a>
+          <a href="#"><svg viewBox="0 0 24 24" fill="#fff"><path d="M22 5.9c-.7.3-1.5.5-2.3.6.8-.5 1.4-1.3 1.7-2.3-.8.5-1.7.8-2.6 1a4.1 4.1 0 00-7 3.7A11.6 11.6 0 013 4.9a4.1 4.1 0 001.3 5.5c-.7 0-1.3-.2-1.9-.5v.1c0 2 1.4 3.6 3.3 4a4.2 4.2 0 01-1.9.1 4.1 4.1 0 003.8 2.9A8.3 8.3 0 012 18.6a11.7 11.7 0 006.3 1.8c7.5 0 11.7-6.3 11.7-11.7v-.5c.8-.6 1.5-1.3 2-2.3z"/></svg></a>
+          <a href="#"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.3 1.1 2.9.9.1-.7.4-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.2-.5-1.3.1-2.7 0 0 .9-.3 2.8 1a9.6 9.6 0 015 0c1.9-1.3 2.8-1 2.8-1 .6 1.4.2 2.5.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .3.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0022 12c0-5.5-4.5-10-10-10z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Panels</h5>
+        <ul>
+          <li><a href="#roles">College Admin</a></li>
+          <li><a href="#roles">Teacher</a></li>
+          <li><a href="#roles">Student</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="#about">What is CET</a></li>
+          <li><a href="#how">Why CrustExams</a></li>
+          <li><a href="#contact">Register a college</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Stay updated</h5>
+        <p>Get updates on new CrustExams features for your college.</p>
+        <form class="nl-form" onsubmit="return false;">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit"><svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M4 12L20 4l-6 16-3-7-7-1z" stroke="#181A2A" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
+        </form>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 CrustExams. Academic project — CET platform demo.</span>
+      <span>Made for the college CET project</span>
+    </div>
+  </div>
+</footer>
+
+<div class="totop" id="totop">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+
+<script>
+  // header shadow on scroll
+  const header = document.getElementById('header');
+  const totop = document.getElementById('totop');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+    totop.classList.toggle('show', window.scrollY > 500);
+  });
+  totop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.15});
+  revealEls.forEach(el => io.observe(el));
+
+  // animated counters
+  const counters = document.querySelectorAll('.stat b');
+  let counted = false;
+  const statsSection = document.querySelector('.stats');
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !counted) {
+        counted = true;
+        counters.forEach(c => {
+          const target = parseInt(c.dataset.count, 10);
+          const suffix = c.dataset.suffix || '';
+          let cur = 0;
+          const step = Math.max(target/40, 1);
+          const t = setInterval(() => {
+            cur += step;
+            if (cur >= target) { cur = target; clearInterval(t); }
+            c.textContent = Math.round(cur) + suffix;
+          }, 30);
+        });
+      }
+    });
+  }, {threshold:.4});
+  if (statsSection) io2.observe(statsSection);
+</script>
+</body>
+</html>

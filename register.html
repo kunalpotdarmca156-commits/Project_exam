@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Your College — CrustExams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#181A2A;
+    --indigo:#3D3AA8;
+    --indigo-2:#5C56E0;
+    --violet:#8A63F3;
+    --amber:#FFB648;
+    --coral:#FF6E5E;
+    --cream:#F7F6FB;
+    --muted:#8A8AA3;
+    --line:#E7E5F3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--ink);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:40px 20px;
+  }
+  h1,h2,.display{font-family:'Sora',sans-serif;}
+  a{color:inherit;text-decoration:none;}
+
+  .card{
+    width:100%;max-width:1080px;min-height:680px;
+    background:#fff;border-radius:28px;overflow:hidden;
+    display:grid;grid-template-columns:1fr 1.05fr;
+    box-shadow:0 60px 120px -40px rgba(0,0,0,.6);
+    opacity:0;transform:translateY(24px);
+    animation:cardIn .7s .1s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+
+  /* ---------------- RIGHT PANEL (gradient) ---------------- */
+  .panel{
+    position:relative;overflow:hidden;order:2;
+    background:linear-gradient(115deg,var(--violet) 0%, var(--indigo-2) 45%, var(--indigo) 75%, var(--coral) 130%);
+    background-size:220% 220%;
+    animation:gradientShift 14s ease-in-out infinite;
+    padding:56px 50px;
+    display:flex;flex-direction:column;justify-content:center;
+    color:#fff;
+  }
+  @keyframes gradientShift{
+    0%,100%{background-position:0% 30%;}
+    50%{background-position:100% 70%;}
+  }
+  .panel::before{
+    content:"";position:absolute;bottom:-90px;left:-70px;width:300px;height:300px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, var(--amber), transparent 70%);
+    opacity:.5;filter:blur(2px);
+    animation:pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+
+  .comets{position:absolute;inset:0;z-index:0;}
+  .comet{
+    position:absolute;border-radius:100px;
+    background:linear-gradient(120deg, var(--amber), var(--coral));
+    opacity:.85;
+    animation:drift 7s ease-in-out infinite;
+  }
+  .c1{width:130px;height:34px;right:-40px;top:60px;animation-delay:0s;transform:rotate(38deg);}
+  .c2{width:90px;height:26px;right:110px;top:150px;animation-delay:1.1s;transform:rotate(38deg);opacity:.7;}
+  .c3{width:150px;height:40px;right:230px;top:20px;animation-delay:.5s;transform:rotate(38deg);}
+  .c4{width:70px;height:20px;right:40px;top:220px;animation-delay:1.6s;transform:rotate(38deg);opacity:.6;}
+  @keyframes drift{
+    0%,100%{transform:translate(0,0) rotate(38deg);}
+    50%{transform:translate(-18px,-18px) rotate(38deg);}
+  }
+
+  .panel-content{position:relative;z-index:2;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin-bottom:60px;}
+  .brand-mark{width:36px;height:36px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .brand-mark img{width:100%;height:100%;object-fit:contain;display:block;}
+  .brand span{color:var(--amber);}
+  .panel h1{font-size:36px;line-height:1.18;font-weight:800;margin-bottom:18px;}
+  .panel p{color:rgba(255,255,255,.82);font-size:15.5px;line-height:1.7;max-width:360px;}
+
+  .steps{position:relative;z-index:2;margin-top:52px;display:flex;flex-direction:column;gap:18px;}
+  .step{display:flex;gap:14px;align-items:flex-start;}
+  .step-num{
+    width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.16);flex:none;
+    display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+  }
+  .step p{font-size:13.5px;color:rgba(255,255,255,.85);line-height:1.5;max-width:280px;}
+  .step b{display:block;font-family:'Sora',sans-serif;font-size:14.5px;margin-bottom:2px;}
+
+  /* ---------------- LEFT PANEL (form) ---------------- */
+  .form-side{order:1;padding:48px 56px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
+  .form-head{margin-bottom:26px;}
+  .form-head .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--indigo-2);font-weight:600;
+  }
+  .form-head h2{font-size:25px;margin-top:10px;font-weight:700;}
+  .form-head p{color:var(--muted);font-size:13.5px;margin-top:6px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field{
+    position:relative;margin-bottom:16px;
+    opacity:0;transform:translateY(10px);
+    animation:fieldIn .55s ease forwards;
+  }
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+  .field .icon{position:absolute;left:16px;top:39px;color:var(--muted);}
+  .field input{
+    width:100%;padding:13px 16px 13px 44px;border-radius:14px;border:1.5px solid var(--line);
+    background:var(--cream);font-size:14px;font-family:'Inter',sans-serif;color:var(--ink);
+    outline:none;transition:border-color .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .field input:focus{border-color:var(--indigo-2);background:#fff;box-shadow:0 0 0 4px rgba(92,86,224,.12);}
+  .field .toggle-pass{position:absolute;right:14px;top:38px;cursor:pointer;color:var(--muted);background:none;border:none;padding:2px;}
+  @keyframes fieldIn{to{opacity:1;transform:translateY(0);}}
+  .field:nth-of-type(1){animation-delay:.08s;} .field:nth-of-type(2){animation-delay:.13s;}
+  .field:nth-of-type(3){animation-delay:.18s;} .field:nth-of-type(4){animation-delay:.23s;}
+  .field:nth-of-type(5){animation-delay:.28s;} .field:nth-of-type(6){animation-delay:.33s;}
+
+  .terms{display:flex;align-items:flex-start;gap:9px;margin:6px 0 22px;font-size:12.5px;color:var(--muted);line-height:1.5;}
+  .terms input{margin-top:2px;accent-color:var(--indigo-2);width:15px;height:15px;flex:none;}
+  .terms a{color:var(--indigo-2);font-weight:600;}
+
+  .btn-submit{
+    width:100%;padding:16px;border:none;border-radius:100px;
+    background:linear-gradient(120deg,var(--indigo-2),var(--violet));
+    background-size:200% 100%;
+    color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:15px;cursor:pointer;
+    box-shadow:0 16px 30px -12px rgba(92,86,224,.65);
+    transition:background-position .5s ease, transform .25s ease, box-shadow .25s ease;
+  }
+  .btn-submit:hover{background-position:100% 0;transform:translateY(-3px);box-shadow:0 20px 36px -12px rgba(92,86,224,.75);}
+  .btn-submit:active{transform:translateY(0);}
+
+  .switch-line{text-align:center;margin-top:22px;font-size:13.5px;color:var(--muted);}
+  .switch-line a{color:var(--ink);font-weight:700;position:relative;}
+  .switch-line a::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:2px;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .25s ease;}
+  .switch-line a:hover::after{transform:scaleX(1);}
+
+  .note{
+    margin-bottom:22px;padding:12px 16px;border-radius:14px;background:var(--cream);font-size:12px;color:var(--muted);
+    display:flex;gap:8px;align-items:flex-start;line-height:1.55;
+  }
+  .note svg{flex:none;margin-top:1px;}
+
+  @media(max-width:860px){
+    .card{grid-template-columns:1fr;}
+    .panel{display:none;}
+    .form-side{padding:40px 26px;}
+    .grid2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="form-side">
+    <div class="form-head">
+      <span class="eyebrow">College registration</span>
+      <h2>Register your college on CrustExams</h2>
+      <p>This creates your College Admin account. You'll add Teachers and Students afterwards.</p>
+    </div>
+
+    <div class="note">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8A8AA3" stroke-width="1.6"/><path d="M12 8v5M12 16h.01" stroke="#8A8AA3" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Only College Admins register here. Teacher and Student accounts are created by the Admin after the college is set up.</span>
+    </div>
+
+    <div class="note" id="formMsg" style="display:none;"></div>
+
+    <form id="registerForm" action="register_process.php" method="POST">
+      <div class="field">
+        <label>College name</label>
+        <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+        <input type="text" name="college_name" placeholder="e.g. Greenview Institute of Technology" required>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label>Admin full name</label>
+          <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 20a8 8 0 0116 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/></svg></span>
+          <input type="text" name="admin_name" placeholder="Your full name" required>
+        </div>
+        <div class="field">
+          <label>Official email</label>
+          <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          <input type="email" name="email" placeholder="admin@college.edu" required>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label>Phone number</label>
+          <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2C9.4 21 3 14.6 3 6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+          <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+        </div>
+        <div class="field">
+          <label>College code</label>
+          <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <input type="text" name="college_code" placeholder="Optional AISHE / short code">
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label>Password</label>
+          <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.7"/></svg></span>
+          <input type="password" id="pw1" name="password" placeholder="Create a password" minlength="6" required>
+          <button type="button" class="toggle-pass" data-target="pw1" aria-label="Show password">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+        <div class="field">
+          <label>Confirm password</label>
+          <span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.7"/></svg></span>
+          <input type="password" id="pw2" name="confirm_password" placeholder="Re-enter password" minlength="6" required>
+          <button type="button" class="toggle-pass" data-target="pw2" aria-label="Show password">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Create College Admin Account</button>
+    </form>
+
+    <p class="switch-line">Already registered? <a href="login.html">Log in instead →</a></p>
+  </div>
+
+
+  <div class="panel">
+    <div class="comets">
+      <div class="comet c1"></div>
+      <div class="comet c2"></div>
+      <div class="comet c3"></div>
+      <div class="comet c4"></div>
+    </div>
+    <div class="panel-content">
+      <a href="index.html" class="brand" style="text-decoration:none;">
+        <div class="brand-mark"><img src="logo_image/logo.png" alt="CrustExams logo"></div>
+        Crust<span>Exams</span>
+      </a>
+      <h1>Bring your college's CET online in minutes.</h1>
+      <p>Register once as the College Admin, then invite your teachers and students — every CET your college runs lives in one place from here on.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p><b>Register the college</b>You're doing this part right now.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p><b>Add Teachers &amp; Students</b>From your new Admin dashboard.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p><b>Run your first CET</b>Teachers build it, students take it.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.toggle-pass').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  // Show success/error message coming back from register_process.php
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status');
+  const msg = params.get('msg');
+  const formMsg = document.getElementById('formMsg');
+  if (status && msg) {
+    formMsg.style.display = 'flex';
+    formMsg.textContent = decodeURIComponent(msg);
+    if (status === 'success') {
+      formMsg.style.background = 'rgba(34,197,94,.12)';
+      formMsg.style.color = '#15803d';
+    } else {
+      formMsg.style.background = 'rgba(239,68,68,.1)';
+      formMsg.style.color = '#b91c1c';
+    }
+  }
+
+  // Client-side password match check (server also checks this)
+  document.getElementById('registerForm').addEventListener('submit', (e) => {
+    const pw1 = document.getElementById('pw1').value;
+    const pw2 = document.getElementById('pw2').value;
+    if (pw1 !== pw2) {
+      e.preventDefault();
+      formMsg.style.display = 'flex';
+      formMsg.style.background = 'rgba(239,68,68,.1)';
+      formMsg.style.color = '#b91c1c';
+      formMsg.textContent = 'Passwords do not match.';
+    }
+  });
+</script>
+</body>
+</html>
